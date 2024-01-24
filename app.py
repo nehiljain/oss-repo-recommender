@@ -33,7 +33,7 @@ auth = Auth.Token(os.getenv("GITHUB_PAT"))
 g = Github(auth=auth)
 
 # initialize the Embeddings Model
-model = SentenceTransformer(f"{os.getenv('MODEL_PATH')}")
+model = SentenceTransformer('intfloat/e5-large-v2')
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 try:
     nltk.download("punkt")
