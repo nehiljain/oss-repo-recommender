@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import os
-import openai
+# import openai
 from github import Github
-import openai
+# import openai
 from github import Auth
 from transformers import BertTokenizer
 from sentence_transformers import SentenceTransformer
@@ -12,20 +12,15 @@ from langchain_community.vectorstores import MongoDBAtlasVectorSearch
 from pymongo import MongoClient
 
 # initialize MongoDB python client
-# mongo_pword = os.getenv("MONGODB_PWORD")'
-mongo_pword = "6MijlMbuCtsBL1uu"
-
-MONGODB_ATLAS_CLUSTER_URI = f"mongodb+srv://wsl:{mongo_pword}@dev.1hazisy.mongodb.net/?retryWrites=true&w=majority"
-
-username, password = 'wsl', mongo_pword
-url = f"mongodb+srv://{username}:{password}@dev.1hazisy.mongodb.net/?retryWrites=true&w=majority"
 
 
-try:
-    client = MongoClient(url, connect=True)
-except Exception as e:
-    print(f"Error connecting to MongoDB Atlas: {e}")
-    sys.exit(1)
+def build_mongo_client():
+    host, user, pswd = os.environ['ATLAS_HOST'], os.environ['MONGODB_USERNAME'], os.environ['MONGODB_PASSWORD']
+    url = f"mongodb+srv://{user}:{pswd}@{host}/?retryWrites=true&w=majority"
+    return MongoClient(url)
+
+
+client = build_mongo_client()
 
 DB_NAME = "default"
 COLLECTION_NAME = "test"
@@ -38,7 +33,7 @@ auth = Auth.Token(os.getenv("GITHUB_PAT"))
 g = Github(auth=auth)
 
 # initialize the Embeddings Model
-model = SentenceTransformer(f"{os.getenv('MODEL_PATH')}")
+model = SentenceTransformer('intfloat/e5-large-v2')
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 try:
     nltk.download("punkt")
